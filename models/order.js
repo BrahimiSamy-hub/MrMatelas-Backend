@@ -37,11 +37,23 @@ const orderSchema = new mongoose.Schema(
     wilaya: {
       type: String,
     },
+    commune: {
+      type: String,
+    },
     phoneNumber: {
       type: String,
     },
     total: {
       type: Number,
+    },
+    shippingType: {
+      type: String,
+      enum: ['desk', 'home'],
+      required: true,
+    },
+    shippingPrice: {
+      type: Number,
+      default: 0,
     },
     orderItems: [
       {
@@ -58,6 +70,19 @@ const orderSchema = new mongoose.Schema(
         price: {
           type: Number,
           required: true,
+        },
+        hex: {
+          type: String,
+          required: true,
+        },
+        longeur: {
+          type: Number,
+        },
+        largeur: {
+          type: Number,
+        },
+        epesseur: {
+          type: Number,
         },
       },
     ],

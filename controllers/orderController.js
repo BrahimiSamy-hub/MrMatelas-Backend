@@ -1,62 +1,67 @@
 const Order = require('../models/order')
 const TelegramBot = require('node-telegram-bot-api')
 const token = process.env.TELEGRAM_API
-const chatIds = ['1046222281', '1938258463']
+const chatIds = ['5096403407']
 const createOrder = async (req, res) => {
   try {
     const orderData = { ...req.body }
     const newOrder = new Order(orderData)
     const createdOrder = await newOrder.save()
 
-    // // Assuming that the `Order` model is correctly set up to reference `Product`
-    // const order = await Order.findById(createdOrder._id).populate({
-    //   path: 'orderItems.product',
-    // })
+    // Assuming that the `Order` model is correctly set up to reference `Product`
+    const order = await Order.findById(createdOrder._id).populate({
+      path: 'orderItems.product',
+    })
 
-    // // Prepare message to be sent via Telegram
-    // let message = `New Order Created:\n`
-    // message += `Order ID: ${order.reference}\n`
-    // message += `----------------------------\n`
-    // message += `Items:\n`
-    // order.orderItems.forEach((item) => {
-    //   message += `${item.product.engName} - Size: ${item.size} -  Quantity: ${
-    //     item.quantity
-    //   }, Price: ${item.price * item.quantity}DA \n`
-    // })
-    // message += `Total: ${order.total} DA\n`
-    // message += `----------------------------\n`
-    // message += `Client Info:\n`
-    // message += `Name: ${order.fullName}\n`
-    // message += `Address: ${order.address}\n`
-    // message += `Phone1: ${order.phoneNumber1}\n`
-    // if (order.phoneNumber2) {
-    //   message += `Phone2: ${order.phoneNumber2}\n`
-    // }
-    // message += `Wilaya: ${order.wilaya}\n`
-    // message += `Commune: ${order.commune}\n`
+    let message = `New Order Created:\n`
+    message += `Order ID: ${order.reference}\n`
+    message += `----------------------------\n`
+    message += `Items:\n`
+    order.orderItems.forEach((item) => {
+      message += `${item.product.engName}  -  Quantity: ${
+        item.quantity
+      }, Price: ${item.price * item.quantity}DA\n`
+      message += `Hex: ${item.hex}\n`
+      if (item.longeur) {
+        message += `Longeur: ${item.longeur} cm\n`
+      }
+      if (item.largeur) {
+        message += `Largeur: ${item.largeur} cm\n`
+      }
+      if (item.epesseur) {
+        message += `Épaisseur: ${item.epesseur} cm\n`
+      }
+      message += `----------------------------\n`
+    })
 
-    // if (order.note) {
-    //   message += `Note: ${order.note}\n`
-    // }
+    message += `Total: ${order.total} DA\n`
+    message += `----------------------------\n`
+    message += `Client Info:\n`
+    message += `Name: ${order.fullName}\n`
+    message += `Address: ${order.address}\n`
+    message += `Phone1: ${order.phoneNumber1}\n`
+    message += `Shipping type: ${order.shippingType}\n`
+    message += `Wilaya: ${order.wilaya}\n`
+    message += `Commune: ${order.commune}\n`
 
-    // // Sending the message via Telegram
-    // const bot = new TelegramBot(token, { polling: false })
-    // chatIds.forEach((chatId) => {
-    //   bot
-    //     .sendMessage(chatId, message)
-    //     .then((response) => {
-    //       console.log(`Message sent successfully to ${chatId}:`, response)
-    //     })
-    //     .catch((err) => {
-    //       console.error(
-    //         `Failed to send message to ${chatId} via Telegram:`,
-    //         err
-    //       )
-    //     })
-    // })
+    if (order.note) {
+      message += `Note: ${order.note}\n`
+    }
 
-    // console.log(order)
-    res.status(200).json(createdOrder)
+    // Sending the message via Telegram
+    const bot = new TelegramBot(token, { polling: false })
+    chatIds.forEach((chatId) => {
+      bot
+        .sendMessage(chatId, message)
+        .then((response) => {})
+        .catch((err) => {
+          console.error(
+            `Failed to send message to ${chatId} via Telegram:`,
+            err
+          )
+        })
+    })
+    res.status(201).json(order)
   } catch (error) {
     console.error('Error creating Order:', error)
     res.status(500).json({ error: 'Error creating Order' })
@@ -121,7 +126,7 @@ const sendTelegramMessage = async (req, res) => {
   try {
     const bot = new TelegramBot(token, { polling: false })
     const { message } = req.body
-    const chatId = '5096403407' // Your Telegram chat ID
+    const chatId = '' // Your Telegram chat ID
 
     bot
       .sendMessage(chatId, message)
