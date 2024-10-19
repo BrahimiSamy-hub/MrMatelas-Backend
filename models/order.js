@@ -16,6 +16,9 @@ const orderSchema = new mongoose.Schema(
     reference: {
       type: String,
     },
+    adminNote: {
+      type: String,
+    },
     status: {
       type: String,
       enum: [
@@ -40,7 +43,10 @@ const orderSchema = new mongoose.Schema(
     commune: {
       type: String,
     },
-    phoneNumber: {
+    phoneNumber1: {
+      type: String,
+    },
+    phoneNumber2: {
       type: String,
     },
     total: {

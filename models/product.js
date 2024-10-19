@@ -69,7 +69,6 @@ const productSchema = new mongoose.Schema(
     type: {
       type: String,
       enum: ['bébé', 'adulte'],
-      required: true,
     },
     spots: {
       type: Number,

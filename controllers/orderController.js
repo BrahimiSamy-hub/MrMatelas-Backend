@@ -40,13 +40,12 @@ const createOrder = async (req, res) => {
     message += `Name: ${order.fullName}\n`
     message += `Address: ${order.address}\n`
     message += `Phone1: ${order.phoneNumber1}\n`
+    if (order.phoneNumber2) {
+      message += `Phone2: ${order.phoneNumber2}\n`
+    }
     message += `Shipping type: ${order.shippingType}\n`
     message += `Wilaya: ${order.wilaya}\n`
     message += `Commune: ${order.commune}\n`
-
-    if (order.note) {
-      message += `Note: ${order.note}\n`
-    }
 
     // Sending the message via Telegram
     const bot = new TelegramBot(token, { polling: false })
@@ -75,6 +74,7 @@ const getOrders = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10
     const status = req.query.status
     const filter = req.query.filter
+    const product = req.query.product
     const options = {
       page,
       limit,
@@ -94,6 +94,9 @@ const getOrders = async (req, res) => {
         { phoneNumber1: { $regex: regex } },
         { phoneNumber2: { $regex: regex } },
       ]
+    }
+    if (product) {
+      query.orderItems = { $elemMatch: { product: product } }
     }
 
     const orders = await Order.paginate(query, options)

@@ -5,7 +5,12 @@ const userJwt = require('../middlewares/userJwt')
 const upload = require('../middlewares/fileUpload')
 
 // Define routes
-router.post('/', upload.single('image'), categoryController.createCategory)
+router.post(
+  '/',
+  userJwt,
+  upload.single('image'),
+  categoryController.createCategory
+)
 router.get('/', categoryController.getCategories)
 router.put(
   '/:id',
